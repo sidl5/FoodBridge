@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodBridge — Rescue surplus food before it's too late</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand" id="nav-brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2">
+            <path d="M12 2C8 6 5 10 5 14a7 7 0 0014 0c0-4-3-8-7-12z"/>
+          </svg>
+        </span>
+        FoodBridge
+      </div>
+      <div class="nav-links">
+        <a href="#listings" id="link-listings">Available Now</a>
+        <a href="#donate" id="link-donate">Donate Food</a>
+        <a href="#help">Helpline</a>
+        <a id="nav-dash-link" class="hidden">Dashboard</a>
+        <button id="auth-action-trigger" class="auth-action-btn">
+          <i class="fas fa-sign-in-alt"></i> Sign In / Register
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="modal-overlay hidden" id="auth-modal">
+    <div class="modal-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login">Sign In</button>
+        <button class="auth-tab" id="tab-register">Register</button>
+      </div>
+      <form id="auth-form" class="auth-form-container">
+        <div class="field hidden" id="auth-name-wrapper">
+          <label>Full Name</label>
+          <input type="text" id="auth-name-input" placeholder="John Doe">
+        </div>
+        <div class="field">
+          <label id="auth-email-label">Email Address</label>
+          <input type="email" id="auth-email-input" required placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="auth-password-input" required placeholder="••••••••">
+        </div>
+        <button type="submit" id="auth-submit-btn" class="submit-btn" style="margin-top:8px;">Sign In</button>
+        <button type="button" id="close-auth" class="cancel-link">Cancel</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay hidden" id="profile-modal">
+    <div class="modal-card">
+      <div class="modal-header-block">
+        <h3>Manage Account Details</h3>
+        <p>View or modify your profile security & credentials</p>
+      </div>
+      <form id="profile-edit-form" class="auth-form-container">
+        <div class="field">
+          <label>Full Name</label>
+          <input type="text" id="prof-name-input" required>
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="prof-email-input" required>
+        </div>
+        <div class="field">
+          <label>Change Password (Optional)</label>
+          <input type="password" id="prof-password-input" placeholder="Enter new password to change">
+        </div>
+        <div class="profile-action-group">
+          <button type="submit" class="submit-btn save-btn">Save Changes</button>
+          <button type="button" id="prof-logout-btn" class="submit-btn logout-btn">Log Out</button>
+          <button type="button" id="close-profile" class="cancel-link">Close Panel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="main-view">
+    <header class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Live rescue network running now</div>
+          <h1>Good food has a short window. <br><em>Close the gap</em> before it closes.</h1>
+          <p class="lede">FoodBridge connects kitchens, stores, and households with surplus food to volunteers and shelters nearby — tracked transparently from listing to collection.</p>
+          <div class="hero-actions">
+            <a href="#donate" class="btn-primary">List food to donate →</a>
+            <a href="#listings" class="btn-secondary">See what's available</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat"><div class="num" id="stat-active">0</div><div class="label">Active listings</div></div>
+            <div class="stat"><div class="num" id="stat-rescued">0</div><div class="label">Meals rescued</div></div>
+            <div class="stat"><div class="num">24/7</div><div class="label">Direct Monitoring</div></div>
+          </div>
+        </div>
+        <div class="ticker-card">
+          <div class="ticker-head">
+            <span>Expiring Soonest</span>
+            <span class="mono" id="ticker-clock-now">--:--</span>
+          </div>
+          <div id="hero-ticker"></div>
+        </div>
+      </div>
+    </header>
+
+    <section id="listings">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="tag">Available Right Now</div>
+          <h2>Food waiting to be rescued</h2>
+        </div>
+        <div class="listings-toolbar">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="veg">Vegetarian</button>
+          <button class="filter-chip" data-filter="cooked">Cooked Meals</button>
+          <button class="filter-chip" data-filter="packaged">Packaged Goods</button>
+        </div>
+        <div class="listing-grid" id="listing-grid"></div>
+      </div>
+    </section>
+
+    <section id="donate">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="tag">Surplus Allocation Form</div>
+          <h2>List your surplus items in under a minute</h2>
+        </div>
+        <form class="form-card" id="donate-form">
+          <div class="donate-grid">
+            <div class="field"><label>Food Name *</label><input type="text" id="f-name" required placeholder="e.g. Vegetable biryani, 30 portions"></div>
+            <div class="field">
+              <label>Category *</label>
+              <select id="f-category" required>
+                <option value="cooked">Cooked meals</option>
+                <option value="veg">Vegetarian produce</option>
+                <option value="packaged">Packaged / dry goods</option>
+              </select>
+            </div>
+            <div class="field"><label>Quantity *</label><input type="text" id="f-qty" required placeholder="e.g. 15 kg, 30 packages"></div>
+            <div class="field"><label>Safe to consume until *</label><input type="datetime-local" id="f-expiry" required></div>
+            <div class="field full"><label>Pickup Location Address *</label><input type="text" id="f-location" required placeholder="Full street address or landmark layout"></div>
+            <div class="field"><label>Contact Name *</label><input type="text" id="f-contact" required placeholder="Your name"></div>
+            <div class="field"><label>Phone Number *</label><input type="tel" id="f-phone" required placeholder="Contact phone number"></div>
+          </div>
+          <div style="margin-top: 24px;"><button type="submit" class="submit-btn">Publish Live Listing →</button></div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <div id="dashboard-view" class="hidden" style="padding-top:40px; padding-bottom:60px;">
+    <div class="wrap">
+      <div class="dash-container">
+        <div class="dash-header">
+          <div>
+            <h2 style="color:var(--primary-green);">Your Rescue Dashboard</h2>
+            <p style="font-size:0.9rem; color:#666;">Track your dynamic published listings and impacts real-time</p>
+          </div>
+        </div>
+        
+        <div class="section-head" style="margin-bottom:16px;">
+          <div class="tag">Active Logs</div>
+          <h3 style="font-size:1.4rem; margin-top:4px;"><i class="fas fa-hand-holding-heart" style="color:var(--accent-orange); margin-right:8px;"></i>Your Published Donations</h3>
+        </div>
+        <div class="listing-grid" id="dash-listings-grid" style="margin-bottom:40px;"></div>
+
+        <div class="section-head" style="margin-bottom:16px;">
+          <div class="tag">History Archive</div>
+          <h3 style="font-size:1.4rem; margin-top:4px;"><i class="fas fa-box-open" style="color:var(--primary-green); margin-right:8px;"></i>Your Claimed Rescues</h3>
+        </div>
+        <div class="listing-grid" id="dash-claims-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="help">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="tag">Emergency Rescue Desk</div>
+        <h2>Urgent collection required? Call our logistics helpline</h2>
+      </div>
+      <div class="help-grid">
+        <div class="help-card">
+          <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase;">24/7 Dispatch Line</div>
+          <a href="tel:1800120365" class="number">1800-120-365</a>
+        </div>
+        <div class="help-card">
+          <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase;">WhatsApp Contact</div>
+          <span class="number" style="font-size:1.3rem; color:var(--clean-white);">+91 98123 45678</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">FoodBridge Platform Engine — Verified Freshness & Localized Logistics Sustainability Asset.</div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
